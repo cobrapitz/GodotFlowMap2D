@@ -1,0 +1,54 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=2]
+
+[ext_resource path="res://FlowMap.png" type="Texture" id=1]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+// Set textures to repeat if texture and flow map size differ
+
+uniform sampler2D flowMap;
+
+uniform float timeScale = 0.25;
+uniform float flowMapScale = 0.5;
+
+vec4 lerp(vec4 a, vec4 b, float val) {
+	
+	return (1.0 - val) * a + val * b;
+}
+
+void fragment() {
+	vec4 flow = texture(flowMap, UV * flowMapScale);
+	
+	// distortion from flow map
+	// fract bc of time
+	float time = TIME * timeScale;
+	float timeDistortion1 = fract(time);
+	float timeDistortion2 = fract(time + 0.5);
+	
+	vec2 textureDistortion = (vec2(flow.r, flow.g) - 0.5) * 2.0;
+	
+	// flow distortion 
+	//  * or +
+	vec2 distortion1 = timeDistortion1 * textureDistortion;
+	vec2 distortion2 = timeDistortion2 * textureDistortion;
+	
+	// set texture with distortion
+	vec4 color1 = texture(TEXTURE, UV * distortion1);
+	vec4 color2 = texture(TEXTURE, UV * distortion2);
+	
+	float lerpValue = (fract(time) - 0.5 ) * 2.0;
+	lerpValue = abs(lerpValue);
+	vec4 finalColor = lerp(color1, color2, lerpValue);
+	COLOR = finalColor;
+	COLOR = mix(color1, color2, lerpValue);
+//	COLOR = flow;
+//	COLOR = vec4(lerpValue);
+}"
+custom_defines = ""
+
+[resource]
+shader = SubResource( 1 )
+shader_param/timeScale = 0.15
+shader_param/flowMapScale = 0.5
+shader_param/flowMap = ExtResource( 1 )

@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://FlowMapShader.tres" type="Material" id=1]
+
+[sub_resource type="OpenSimplexNoise" id=1]
+
+[sub_resource type="NoiseTexture" id=2]
+seamless = true
+noise = SubResource( 1 )
+
+[node name="Node" type="Node"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+material = ExtResource( 1 )
+margin_right = 40.0
+margin_bottom = 40.0
+texture = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
